@@ -35,7 +35,7 @@ CREATE TABLE `oauth_refresh_token` (
 
 CREATE TABLE `permission` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(512) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 );
@@ -81,8 +81,8 @@ CREATE TABLE `oauth_client_token` (
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(100) NOT NULL,
-  `password` varchar(1024) NOT NULL,
-  `email` varchar(1024) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `enabled` tinyint(4) NOT NULL,
   `nome` varchar(255) DEFAULT NULL,
   `data_inclusao` datetime NOT NULL,

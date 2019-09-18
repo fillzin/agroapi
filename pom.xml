@@ -22,6 +22,35 @@
 		<angular.project.nodeinstallation>node_installation</angular.project.nodeinstallation>
 	</properties>
 
+	<profiles>
+
+		<profile>
+			<id>dev</id>
+			<activation>
+				<!-- this profile is active by default -->
+<!-- 				<activeByDefault>true</activeByDefault> -->
+				<!-- activate if system properties 'env=dev' -->
+				<property>
+					<name>env</name>
+					<value>dev</value>
+				</property>
+			</activation>
+		</profile>
+
+		<profile>
+			<id>prod</id>
+			<activation>
+			<activeByDefault>true</activeByDefault>
+				<!-- activate if system properties 'env=prod' -->
+				<property>
+					<name>env</name>
+					<value>prod</value>
+				</property>
+			</activation>
+		</profile>
+
+	</profiles>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -111,23 +140,30 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			
-			 <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.0.1</version>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals><goal>copy-dependencies</goal></goals>
-                    </execution>
-                </executions>
-            </plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.0.1</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 	</build>
-
 
 
 

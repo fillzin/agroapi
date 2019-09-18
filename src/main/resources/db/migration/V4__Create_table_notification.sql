@@ -1,4 +1,4 @@
-CREATE TABLE `agrostok`.`notifications` (
+CREATE TABLE `notifications` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `msg` VARCHAR(80) NOT NULL,
   `readed` TINYINT(1) NOT NULL,
@@ -11,11 +11,11 @@ CREATE TABLE `agrostok`.`notifications` (
   INDEX `NOT_USER_UPD_FK_idx` (`user_updated_id` ASC) ,
   CONSTRAINT `NOT_USER_CRE_FK`
     FOREIGN KEY (`user_created_id`)
-    REFERENCES `agrostok`.`user` (`id`)
+    REFERENCES `user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `NOT_USER_UPD_FK`
     FOREIGN KEY (`user_updated_id`)
-    REFERENCES `agrostok`.`user` (`id`)
+    REFERENCES `user` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);

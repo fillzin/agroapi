@@ -1,5 +1,6 @@
 package br.com.agrostok.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class StockHistDto {
@@ -8,6 +9,7 @@ public class StockHistDto {
 	private LocalDateTime createdDate;
 	private Integer count;
 	private String operation;
+	private BigDecimal value;
 
 	public String getProductName() {
 		return productName;
@@ -39,5 +41,14 @@ public class StockHistDto {
 
 	public void setOperation(String operation) {
 		this.operation = operation;
+	}
+
+	public BigDecimal getValue() {
+		return value;
+	}
+
+	public StockHistDto setValue(BigDecimal value) {
+		this.value = value;
+		return this;
 	}
 }

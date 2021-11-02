@@ -1,5 +1,6 @@
 package br.com.agrostok.repository;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -18,4 +19,6 @@ public interface StockRepository extends JpaRepository<Stock, Long>, JpaSpecific
 	@Query(value = "SELECT x FROM Stock x WHERE x.userCreatedId =:userId AND x.product.id = :productId")
 	Optional<Stock> findByProductAndUser(Long userId, Long productId);
 
+	@Query(value = "SELECT sum(x.value) FROM Stock x")
+	BigDecimal somaDespesa();
 }

@@ -1,9 +1,12 @@
 package br.com.agrostok.dto;
 
+import java.math.BigDecimal;
+
 public class ProductDto {
 
 	private Long productId;
 	private Integer count;
+	private BigDecimal saleTotalValue;
 
 	public Long getProductId() {
 		return productId;
@@ -21,4 +24,12 @@ public class ProductDto {
 		this.count = count;
 	}
 
+	public BigDecimal getSaleTotalValue() {
+		return saleTotalValue;
+	}
+
+	public ProductDto setSaleTotalValue(BigDecimal saleTotalValue) {
+		this.saleTotalValue = saleTotalValue;
+		return this;
+	}
 }

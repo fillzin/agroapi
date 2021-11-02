@@ -1,5 +1,6 @@
 package br.com.agrostok.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public interface SaleRepository extends JpaRepository<Sale, Long>, JpaSpecificat
 	@Query(value="SELECT x FROM Sale x WHERE x.userCreatedId =:userId and "
 			+ " createdDate >= :startDate and createdDate <= :endDate")
 	List<Sale> findByYear(Long userId, LocalDateTime startDate, LocalDateTime endDate);
-	
-	
+
+	@Query(value="SELECT sum(x.value) FROM Sale x")
+	BigDecimal somaReceita();
 }

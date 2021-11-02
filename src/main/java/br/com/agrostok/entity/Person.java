@@ -47,6 +47,12 @@ public class Person implements Serializable {
 	@Length(max = 20)
 	private String phone2;
 
+	@Column(name = "bloco")
+	private String bloco;
+
+	@Column(name = "casa")
+	private String casa;
+
 	@Column(name = "type")
 	private int type;
 

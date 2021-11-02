@@ -1,16 +1,10 @@
 package br.com.agrostok.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "stock")
@@ -27,11 +21,19 @@ public class Stock implements Serializable {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "product_id", referencedColumnName = "id", nullable = true)
 	private Product product;
+
+	@ManyToOne
+	@JoinColumn(name = "ingrediente_id", referencedColumnName = "id", nullable = true)
+	private Ingrediente ingrediente;
+
 
 	@Column(name = "count")
 	private Integer count;
+
+	@Column(name = "value")
+	private BigDecimal value;
 
 	@Column(name = "created_date")
 	private LocalDateTime createdDate;
@@ -102,5 +104,28 @@ public class Stock implements Serializable {
 
 	public void setUserUpdatedId(Long userUpdatedId) {
 		this.userUpdatedId = userUpdatedId;
+	}
+
+	public Ingrediente getIngrediente() {
+		return ingrediente;
+	}
+
+	public Stock setIngrediente(Ingrediente ingrediente) {
+		this.ingrediente = ingrediente;
+		return this;
+	}
+
+	public BigDecimal getValue() {
+		return value;
+	}
+
+	public Stock setValue(BigDecimal value) {
+		this.value = value;
+		return this;
+	}
+
+	@PrePersist
+	public void initDate(){
+		this.createdDate = LocalDateTime.now();
 	}
 }

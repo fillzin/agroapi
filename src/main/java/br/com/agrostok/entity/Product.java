@@ -36,7 +36,7 @@ public class Product implements Serializable {
 	@NotEmpty(message = "Nome é obrigatório")
 	@Length(max = 45)
 	private String name;
-
+	
 	@Column(name = "value")
 	@NotNull(message = "Valor é obrigatório")
 	private BigDecimal value;
@@ -144,5 +144,7 @@ public class Product implements Serializable {
 	public void setMinStock(Integer minStock) {
 		this.minStock = minStock;
 	}
+
+
 
 }

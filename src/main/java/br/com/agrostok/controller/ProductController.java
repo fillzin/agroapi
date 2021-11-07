@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.agrostok.dto.ProdutoDto;
 import br.com.agrostok.dto.RetornoDto;
 import br.com.agrostok.dto.filter.PaginacaoDto;
+import br.com.agrostok.entity.Product;
+import br.com.agrostok.repository.ProductRepository;
 import br.com.agrostok.service.ProductService;
 
 @RestController
@@ -26,6 +28,9 @@ public class ProductController {
 
 	@Autowired
 	private ProductService productService;
+	
+	@Autowired
+	private ProductRepository productRepository;
 
 	@PostMapping
 	@ResponseStatus(value = HttpStatus.OK)
@@ -37,15 +42,27 @@ public class ProductController {
 	@GetMapping(value = "/list")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<List<ProdutoDto>> list(@RequestParam(required = false) Integer page,
-			@RequestParam(required = false) Integer count) {
-		return ResponseEntity.ok(productService.listAll(new PaginacaoDto(page, count)));
+			@RequestParam(required = false) Integer count, @RequestParam(required = false) String name) {
+		return ResponseEntity.ok(productService.listAll(new PaginacaoDto(page, count), name));
 	}
+	
+
 
 	@GetMapping(value = "/{id}")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<ProdutoDto> get(@PathVariable("id") Long id) {
 		return ResponseEntity.ok(productService.findDtoById(id));
 	}
+	
+	@GetMapping(value = "/julio/{name}")
+	@ResponseStatus(value = HttpStatus.OK)
+	public ResponseEntity<List<ProdutoDto>> findByName(@PathVariable("name") String name,
+			@RequestParam("pagina") Integer pagina, 
+			@RequestParam("quantidadeRegistros") Integer quantidadeRegistros) {
+		return ResponseEntity.ok(productService.findByName(name, pagina, quantidadeRegistros));
+	}
+	
+
 
 	@PutMapping
 	@ResponseStatus(value = HttpStatus.OK)

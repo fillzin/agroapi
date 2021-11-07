@@ -3,6 +3,7 @@ package br.com.agrostok.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,6 +28,7 @@ import br.com.agrostok.dto.SaledProductDto;
 import br.com.agrostok.dto.ValidationDto;
 import br.com.agrostok.dto.filter.PaginacaoDto;
 import br.com.agrostok.entity.Product;
+import br.com.agrostok.entity.SaleProduct;
 import br.com.agrostok.exception.AppRuntimeException;
 import br.com.agrostok.exception.ValidationException;
 import br.com.agrostok.repository.ProductRepository;
@@ -43,7 +45,7 @@ public class ProductService {
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private StockService stockService;
 
@@ -88,13 +90,13 @@ public class ProductService {
 
 	}
 
-	public List<ProdutoDto> listAll(PaginacaoDto paginacaoDto) {
+	public List<ProdutoDto> listAll(PaginacaoDto paginacaoDto, String name) {
 		try {
 			PageRequest paginacao = PageRequest.of(PaginacaoEnum.getPage(paginacaoDto.getPagina()),
 					PaginacaoEnum.getTotalRegistros(paginacaoDto.getQtdRegistros()));
 
 			Page<Product> pageProducts = productRepository.findByFiltros(userService.getLoggerUser().getId(),
-					paginacao);
+					paginacao, name);
 			if (!pageProducts.getContent().isEmpty()) {
 				return pageProducts.getContent().stream().map(product -> {
 					ProdutoDto produtoDto = new ProdutoDto();
@@ -156,13 +158,36 @@ public class ProductService {
 		return product;
 	}
 
-	public List<SaledProductDto> findProductsWithTotalSaled(){
+	public List<SaledProductDto> findProductsWithTotalSaled() {
 		try {
-			
+
 			return productRepository.findProductAndSaleValue(userService.getLoggerUser().getId());
 		} catch (Exception e) {
 			throw new AppRuntimeException(AppUtil.generateRandomString());
 		}
+	}
+
+	public List<ProdutoDto> findByName(String name, Integer pagina, Integer quantidadeRegistros) {
+
+		try {
+			PageRequest paginacao = PageRequest.of(pagina,quantidadeRegistros);
+			
+			Page<Product> list = productRepository.findByName(name, paginacao);
+			
+			//Map utilizado para transformar um objeto em qualquer coisa
+			//lambda
+			return list.getContent().stream().map(product -> {
+				ProdutoDto produtoDto = new ProdutoDto();
+				produtoDto.setName(product.getName());
+				return produtoDto;
+			}).collect(Collectors.toList());
+			
+
+		} catch (Exception e) {
+			throw new AppRuntimeException(AppUtil.generateRandomString());
+		}
+		
+
 	}
 
 }

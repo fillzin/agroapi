@@ -14,8 +14,8 @@ import br.com.agrostok.entity.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
-	@Query(value="SELECT x FROM Product x WHERE x.userCreatedId =:userId AND ((:name is null) or (x.name like %:name%))")
-	Page<Product> findByFiltros(Long userId, Pageable pageable, String name);
+	@Query(value="SELECT x FROM Product x WHERE x.userCreatedId =:userId")
+	Page<Product> findByFiltros(Long userId, Pageable pageable);
 	
 	Optional<Product> findById(Long id);
 	
@@ -27,7 +27,4 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 			+ " GROUP BY s.product.id"
 			+ " ORDER BY sum(s.total) desc")
 	List<SaledProductDto> findProductAndSaleValue(Long userId);
-	
-	@Query(value="SELECT x FROM Product x WHERE x.name like %?1%")
-	Page<Product> findByName(String name, Pageable pageable);
 }

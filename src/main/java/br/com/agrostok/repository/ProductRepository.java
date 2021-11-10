@@ -3,6 +3,7 @@ package br.com.agrostok.repository;
 import java.util.List;
 import java.util.Optional;
 
+import br.com.agrostok.entity.SaleProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,10 +22,10 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 	
 	Optional<Product> findByNameAndUserCreatedId(String name, Long userId);
 	
-	@Query(value="SELECT new br.com.agrostok.dto.SaledProductDto( sum(s.total), p.name ) "
+	@Query(value="SELECT s "
 			+ " FROM SaleProduct s INNER JOIN s.product p  "
 			+ " WHERE s.userCreatedId =:userId"
 			+ " GROUP BY s.product.id"
 			+ " ORDER BY sum(s.total) desc")
-	List<SaledProductDto> findProductAndSaleValue(Long userId);
+	List<SaleProduct> findProductAndSaleValue(Long userId);
 }

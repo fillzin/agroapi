@@ -39,6 +39,13 @@ public class DashboardController {
 	public ResponseEntity<List<SaledProductDto>> listSalesByProduct() {
 		return ResponseEntity.ok(service.listSalesByProduct());
 	}
+	@GetMapping(value = "/revenue")
+	@ResponseStatus(value = HttpStatus.OK)
+	public ResponseEntity<SaledProductDto> listReceitaAndDespesa() {
+		return ResponseEntity.ok(service.listReceitaAndDespesa());
+	}
+
+
 
 
 }

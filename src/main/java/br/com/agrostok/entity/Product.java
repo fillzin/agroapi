@@ -3,15 +3,9 @@ package br.com.agrostok.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -38,14 +32,34 @@ public class Product implements Serializable {
 	private String name;
 
 	@Column(name = "value")
-	@NotNull(message = "Valor é obrigatório")
 	private BigDecimal value;
+
+	@Column(name = "value_sale")
+	@NotNull(message = "Valor é obrigatório")
+	private BigDecimal valueSale;
+
+	@Column(name = "value_sale2")
+	private BigDecimal valueSale2;
+
+	@Column(name = "description_value")
+	@Length(max = 45)
+	private String descriptionValue;
+
+	@Column(name = "description_value_2")
+	@Length(max = 45)
+	private String descriptionValue2;
 
 	@Column(name = "created_count")
 	private Integer count;
 	
 	@Column(name = "min_stock")
 	private Integer minStock;
+
+	@Column(name = "two_price")
+	private Boolean twoPrice;
+
+	@Column(name = "tem_ingrediente")
+	private Boolean temIngrediente;
 
 	@Column(name = "created_date")
 	private LocalDateTime createdDate;
@@ -61,6 +75,9 @@ public class Product implements Serializable {
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "product")
 	private Stock stock;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<ProductIngrediente> ingredientes;
 
 	public Product() {
 	}
@@ -145,4 +162,67 @@ public class Product implements Serializable {
 		this.minStock = minStock;
 	}
 
+
+	public BigDecimal getValueSale() {
+		return valueSale;
+	}
+
+	public Product setValueSale(BigDecimal valueSale) {
+		this.valueSale = valueSale;
+		return this;
+	}
+
+	public BigDecimal getValueSale2() {
+		return valueSale2;
+	}
+
+	public Product setValueSale2(BigDecimal valueSale2) {
+		this.valueSale2 = valueSale2;
+		return this;
+	}
+
+	public String getDescriptionValue() {
+		return descriptionValue;
+	}
+
+	public Product setDescriptionValue(String descriptionValue) {
+		this.descriptionValue = descriptionValue;
+		return this;
+	}
+
+	public String getDescriptionValue2() {
+		return descriptionValue2;
+	}
+
+	public Product setDescriptionValue2(String descriptionValue2) {
+		this.descriptionValue2 = descriptionValue2;
+		return this;
+	}
+
+	public Boolean getTwoPrice() {
+		return twoPrice;
+	}
+
+	public Product setTwoPrice(Boolean twoPrice) {
+		this.twoPrice = twoPrice;
+		return this;
+	}
+
+	public Boolean getTemIngrediente() {
+		return temIngrediente;
+	}
+
+	public Product setTemIngrediente(Boolean temIngrediente) {
+		this.temIngrediente = temIngrediente;
+		return this;
+	}
+
+	public List<ProductIngrediente> getIngredientes() {
+		return ingredientes;
+	}
+
+	public Product setIngredientes(List<ProductIngrediente> ingredientes) {
+		this.ingredientes = ingredientes;
+		return this;
+	}
 }

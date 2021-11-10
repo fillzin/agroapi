@@ -1,0 +1,3 @@
+ALTER TABLE `person`
+    ADD COLUMN `bloco` VARCHAR(45) NULL AFTER `type`,
+ADD COLUMN `casa` VARCHAR(45) NULL AFTER `bloco`;

@@ -44,6 +44,9 @@ public class SaleProduct implements Serializable {
 	@Column(name = "total")
 	private BigDecimal total;
 
+	@Column(name = "custo")
+	private BigDecimal custo;
+
 	@Column(name = "user_created_id")
 	private Long userCreatedId;
 
@@ -103,4 +106,12 @@ public class SaleProduct implements Serializable {
 		this.userCreatedId = userCreatedId;
 	}
 
+	public BigDecimal getCusto() {
+		return custo;
+	}
+
+	public SaleProduct setCusto(BigDecimal custo) {
+		this.custo = custo;
+		return this;
+	}
 }

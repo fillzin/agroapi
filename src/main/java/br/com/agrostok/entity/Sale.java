@@ -48,6 +48,15 @@ public class Sale implements Serializable {
 	@Column(name = "user_updated_id")
 	private Long userUpdatedId;
 
+	@Column(name = "bloco")
+	private String bloco;
+
+	@Column(name = "casa")
+	private String casa;
+
+	@Column(name = "condominio")
+	private String condominio;
+
 	public Sale() {
 	}
 
@@ -107,5 +116,30 @@ public class Sale implements Serializable {
 		this.saleProducts = saleProducts;
 	}
 
+	public String getBloco() {
+		return bloco;
+	}
 
+	public Sale setBloco(String bloco) {
+		this.bloco = bloco;
+		return this;
+	}
+
+	public String getCasa() {
+		return casa;
+	}
+
+	public Sale setCasa(String casa) {
+		this.casa = casa;
+		return this;
+	}
+
+	public String getCondominio() {
+		return condominio;
+	}
+
+	public Sale setCondominio(String condominio) {
+		this.condominio = condominio;
+		return this;
+	}
 }

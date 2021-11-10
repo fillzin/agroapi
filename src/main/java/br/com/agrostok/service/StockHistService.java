@@ -3,6 +3,7 @@ package br.com.agrostok.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -60,10 +61,16 @@ public class StockHistService {
 			if (!pageClients.getContent().isEmpty()) {
 				return pageClients.getContent().stream().map(stock -> {
 					StockHistDto dto = new StockHistDto();
-					dto.setProductName(stock.getProduct().getName());
+					if (Objects.nonNull(stock.getProduct())) {
+						dto.setProductName(stock.getProduct().getName());
+					} else {
+						dto.setProductName(stock.getStock().getIngrediente().getName());
+					}
+
 					dto.setCount(stock.getCount());
 					dto.setCreatedDate(stock.getCreatedDate());
 					dto.setOperation(StockOperationEnum.getByCode(stock.getOperation()).getDescricao());
+					dto.setValue(stock.getStock().getValue());
 					return dto;
 				}).collect(Collectors.toList());
 			}

@@ -8,9 +8,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import br.com.agrostok.repository.SaleProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,98 +38,110 @@ public class SaleService {
 
 //	private static final Logger logger = LogManager.getLogger(ProductService.class);
 
-	@Autowired
-	private SaleRepository saleRepository;
+    @Autowired
+    private SaleRepository saleRepository;
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private SaleProductRepository saleProductRepository;
 
-	@Autowired
-	private ProductService productService;
+    @Autowired
+    private UserService userService;
 
-	@Autowired
-	private StockService stockService;
+    @Autowired
+    private ProductService productService;
 
-	@Transactional
-	public void sale(SaleDto saleDto) {
+    @Autowired
+    private StockService stockService;
 
-			Sale sale = new Sale();
+    @Transactional
+    public void sale(SaleDto saleDto) {
 
-			BigDecimal totalValue = BigDecimal.ZERO;
-			List<SaleProduct> salesProducts = new ArrayList<>();
-			for (ProductDto productDto : saleDto.getProducts()) {
+        Sale sale = new Sale();
 
-				Optional<Stock> stock = stockService.findByProductAndUser(userService.getLoggerUser().getId(),
-						productDto.getProductId());
-				if (!stock.isPresent()) {
-					throw new AppBusinessException(AppUtil.generateRandomString(), "Estoque não encontrado para esse produto.");
-				}
-				if (stock.get().getCount() < productDto.getCount()) {
-					throw new AppBusinessException(AppUtil.generateRandomString(),
-							"Quantidade atual do estoque é: " + stock.get().getCount());
-				}
-				
-				Product product = productService.findById(productDto.getProductId());
-				BigDecimal productTotalValue = product.getValue().multiply(new BigDecimal(productDto.getCount()));
-				
-				SaleProduct saleProduct = new SaleProduct();
-				saleProduct.setCount(productDto.getCount());
-				saleProduct.setProduct(product);
-				saleProduct.setStock(stock.get());
-				saleProduct.setTotal(productTotalValue);
-				saleProduct.setUserCreatedId(userService.getLoggerUser().getId());
-				saleProduct.setSale(sale);
-				salesProducts.add(saleProduct);
-				totalValue = totalValue.add(productTotalValue);
-				stockService.subtractFromStock(product, productDto.getCount());
-			}
-			
-			
-			sale.setSaleProducts(salesProducts);
-			sale.setValue(totalValue);
-			sale.setUserCreatedId(userService.getLoggerUser().getId());
-			sale.setCreatedDate(LocalDateTime.now());
-			saleRepository.save(sale);
-	}
+        BigDecimal totalValue = BigDecimal.ZERO;
+        List<SaleProduct> salesProducts = new ArrayList<>();
+        for (ProductDto productDto : saleDto.getProducts()) {
 
-	public List<ReturnSaleDto> listAll(PaginacaoDto paginacaoDto) {
-		try {
-			PageRequest paginacao = PageRequest.of(PaginacaoEnum.getPage(paginacaoDto.getPagina()),
-					PaginacaoEnum.getTotalRegistros(paginacaoDto.getQtdRegistros()));
+//            Optional<Stock> stock = stockService.findByProductAndUser(userService.getLoggerUser().getId(),
+//                    productDto.getProductId());
+//            if (!stock.isPresent()) {
+//                throw new AppBusinessException(AppUtil.generateRandomString(), "Estoque não encontrado para esse produto.");
+//            }
+//            if (stock.get().getCount() < productDto.getCount()) {
+//                throw new AppBusinessException(AppUtil.generateRandomString(),
+//                        "Quantidade atual do estoque é: " + stock.get().getCount());
+//            }
 
-			Page<Sale> pageSales = saleRepository.findByFiltros(userService.getLoggerUser().getId(),
-					paginacao);
-			if (!pageSales.getContent().isEmpty()) {
-				
-				return pageSales.getContent().stream().map(sale ->{
-					return convertSaleDto(sale);
-				}).collect(Collectors.toList());
-			}
-		} catch (Exception e) {
-			throw new AppRuntimeException(AppUtil.generateRandomString());
-		}
+            Product product = productService.findById(productDto.getProductId());
+//				BigDecimal productTotalValue = product.getValue().multiply(new BigDecimal(productDto.getCount()));
 
-		return new ArrayList<ReturnSaleDto>();
-	}
-	
-	public List<Sale> getAllSaleByActualYear(){
-		int actualYear = LocalDate.now().getYear();
-		LocalDateTime dataInicio = LocalDateTime.of(actualYear, JANUARY, 1, 1, 0);
-		LocalDateTime dataFim = LocalDateTime.of(actualYear, DECEMBER, 31, 1, 0);
-		return saleRepository.findByYear(userService.getLoggerUser().getId(), dataInicio, dataFim);
-	}
 
-	private ReturnSaleDto convertSaleDto(Sale sale) {
-		ReturnSaleDto saleDto = new ReturnSaleDto();
-		saleDto.setCreatedDate(sale.getCreatedDate());
-		
-		String nameProducts = sale.getSaleProducts().stream()
-			.map(saleProduct->saleProduct.getProduct().getName())
-			.collect(Collectors.joining(","));
-		
-		saleDto.setProductName(nameProducts);
-		saleDto.setTotal(sale.getValue());
-		return saleDto;
-	}
+            SaleProduct saleProduct = new SaleProduct();
+            saleProduct.setCount(productDto.getCount());
+            saleProduct.setProduct(product);
+//            saleProduct.setStock(stock.get());
+            saleProduct.setTotal(productDto.getSaleTotalValue());
+            saleProduct.setUserCreatedId(userService.getLoggerUser().getId());
+            saleProduct.setSale(sale);
+            if(!product.getTemIngrediente() && Objects.nonNull(product.getValue())){
+                saleProduct.setCusto(product.getValue().multiply(new BigDecimal(productDto.getCount())));
+            }
+            salesProducts.add(saleProduct);
+            totalValue = totalValue.add(productDto.getSaleTotalValue());
+//            stockService.subtractFromStock(product, productDto.getCount());
+        }
+
+
+        sale.setSaleProducts(salesProducts);
+        sale.setValue(totalValue);
+        sale.setUserCreatedId(userService.getLoggerUser().getId());
+        sale.setCreatedDate(LocalDateTime.now());
+        sale.setBloco(saleDto.getBloco());
+        sale.setCondominio(saleDto.getCondominio());
+        sale.setCasa(saleDto.getCasa());
+        saleRepository.save(sale);
+    }
+
+    @Transactional
+    public List<ReturnSaleDto> listAll(PaginacaoDto paginacaoDto) {
+        try {
+            PageRequest paginacao = PageRequest.of(PaginacaoEnum.getPage(paginacaoDto.getPagina()),
+                    PaginacaoEnum.getTotalRegistros(paginacaoDto.getQtdRegistros()));
+
+            Page<Sale> pageSales = saleRepository.findByFiltros(userService.getLoggerUser().getId(),
+                    paginacao);
+            if (!pageSales.getContent().isEmpty()) {
+
+                return pageSales.getContent().stream().map(sale -> {
+                    return convertSaleDto(sale);
+                }).collect(Collectors.toList());
+            }
+        } catch (Exception e) {
+            throw new AppRuntimeException(AppUtil.generateRandomString());
+        }
+
+        return new ArrayList<ReturnSaleDto>();
+    }
+
+    public List<Sale> getAllSaleByActualYear() {
+        int actualYear = LocalDate.now().getYear();
+        LocalDateTime dataInicio = LocalDateTime.of(actualYear, JANUARY, 1, 1, 0);
+        LocalDateTime dataFim = LocalDateTime.of(actualYear, DECEMBER, 31, 1, 0);
+        return saleRepository.findByYear(userService.getLoggerUser().getId(), dataInicio, dataFim);
+    }
+
+    private ReturnSaleDto convertSaleDto(Sale sale) {
+        ReturnSaleDto saleDto = new ReturnSaleDto();
+        saleDto.setCreatedDate(sale.getCreatedDate());
+
+        List<SaleProduct> products = saleProductRepository.findBySaleId(sale.getId());
+        String nameProducts = products.stream()
+                .map(saleProduct -> saleProduct.getProduct().getName())
+                .collect(Collectors.joining(","));
+
+        saleDto.setProductName(nameProducts);
+        saleDto.setTotal(sale.getValue());
+        return saleDto;
+    }
 
 }

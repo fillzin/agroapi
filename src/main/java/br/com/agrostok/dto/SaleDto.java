@@ -12,7 +12,7 @@ public class SaleDto {
 	private IngredienteDto ingredienteDto;
 	private BigDecimal value;
 	private Integer count;
-	private Long rank;
+	private Long qtd;
 	
 
 	public List<ProductDto> getProducts() {
@@ -77,12 +77,12 @@ public class SaleDto {
 		return this;
 	}
 
-	public SaleDto(String condominio, String bloco, String casa, Long rank) {
+	public SaleDto(String condominio, String bloco, String casa, Long qtd) {
 		super();
 		this.condominio = condominio;
 		this.bloco = bloco;
 		this.casa = casa;
-		this.setRank(rank);
+		this.setQtd(qtd);
 	}
 
 	public SaleDto() {
@@ -90,13 +90,14 @@ public class SaleDto {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Long getRank() {
-		return rank;
+	public Long getQtd() {
+		return qtd;
 	}
 
-	public void setRank(Long rank) {
-		this.rank = rank;
+	public void setQtd(Long qtd) {
+		this.qtd = qtd;
 	}
+
 
 
 

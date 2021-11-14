@@ -26,8 +26,8 @@ public interface SaleRepository extends JpaRepository<Sale, Long>, JpaSpecificat
 	@Query(value="SELECT sum(x.value) FROM Sale x")
 	BigDecimal somaReceita();
 	
-	@Query("SELECT new br.com.agrostok.dto.SaleDto(s.condominio, s.bloco, s.casa, count(*) as rank)  "+
-			"FROM Sale s GROUP BY s.casa ORDER BY rank DESC")
+	@Query("SELECT new br.com.agrostok.dto.SaleDto(s.condominio, s.bloco, s.casa, count(*) as qtd)  "+
+			"FROM Sale s GROUP BY s.condominio, s.bloco, s.casa ORDER BY qtd DESC")
 	Page<SaleDto> orderByClient(Pageable pageable);
 	
 }

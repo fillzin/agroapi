@@ -12,6 +12,8 @@ public class SaleDto {
 	private IngredienteDto ingredienteDto;
 	private BigDecimal value;
 	private Integer count;
+	private Long qtd;
+	
 
 	public List<ProductDto> getProducts() {
 		return products;
@@ -74,4 +76,30 @@ public class SaleDto {
 		this.count = count;
 		return this;
 	}
+
+	public SaleDto(String condominio, String bloco, String casa, Long qtd) {
+		super();
+		this.condominio = condominio;
+		this.bloco = bloco;
+		this.casa = casa;
+		this.setQtd(qtd);
+	}
+
+	public SaleDto() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Long getQtd() {
+		return qtd;
+	}
+
+	public void setQtd(Long qtd) {
+		this.qtd = qtd;
+	}
+
+
+
+
+
 }

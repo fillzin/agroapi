@@ -63,7 +63,12 @@ public class StockController {
 			@RequestParam(required = false) Integer count) {
 		return ResponseEntity.ok(stockHistService.listAll(new PaginacaoDto(page, count)));
 	}
-
+	@GetMapping(value = "/client")
+	@ResponseStatus(value = HttpStatus.OK)
+	public ResponseEntity<List<SaleDto>> client(@RequestParam(required = false) Integer page,
+			@RequestParam(required = false) Integer count) {
+		return ResponseEntity.ok(saleService.orderByClient(new PaginacaoDto(page, count)));
+	}
 
 //	@GetMapping(value = "/{id}")
 //	@ResponseStatus(value = HttpStatus.OK)

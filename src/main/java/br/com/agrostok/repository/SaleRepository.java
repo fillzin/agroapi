@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
+import br.com.agrostok.dto.SaleDto;
 import br.com.agrostok.entity.Sale;
 
 public interface SaleRepository extends JpaRepository<Sale, Long>, JpaSpecificationExecutor<Sale> {
@@ -24,4 +25,9 @@ public interface SaleRepository extends JpaRepository<Sale, Long>, JpaSpecificat
 
 	@Query(value="SELECT sum(x.value) FROM Sale x")
 	BigDecimal somaReceita();
+	
+	@Query("SELECT new br.com.agrostok.dto.SaleDto(s.condominio, s.bloco, s.casa, count(*) as rank)  "+
+			"FROM Sale s GROUP BY s.casa ORDER BY rank DESC")
+	Page<SaleDto> orderByClient(Pageable pageable);
+	
 }

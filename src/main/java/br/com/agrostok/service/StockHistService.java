@@ -52,12 +52,12 @@ public class StockHistService {
 	}
 
 
-	public List<StockHistDto> listAll(PaginacaoDto paginacaoDto) {
+	public List<StockHistDto> listAll(PaginacaoDto paginacaoDto, String name) {
 		try {
 			PageRequest paginacao = PageRequest.of(PaginacaoEnum.getPage(paginacaoDto.getPagina()),
 					PaginacaoEnum.getTotalRegistros(paginacaoDto.getQtdRegistros()));
 
-			Page<StockHist> pageClients = stockHistRepository.findByFiltros(userService.getLoggerUser().getId(), paginacao);
+			Page<StockHist> pageClients = stockHistRepository.findByFiltros(userService.getLoggerUser().getId(), paginacao, name);
 			if (!pageClients.getContent().isEmpty()) {
 				return pageClients.getContent().stream().map(stock -> {
 					StockHistDto dto = new StockHistDto();

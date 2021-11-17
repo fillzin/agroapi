@@ -16,4 +16,6 @@ public interface SaleProductRepository extends JpaRepository<SaleProduct, Long>,
 
 
 	List<SaleProduct> findBySaleId(Long saleId);
+
+
 }

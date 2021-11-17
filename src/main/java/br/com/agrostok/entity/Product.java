@@ -3,6 +3,7 @@ package br.com.agrostok.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
@@ -76,8 +77,11 @@ public class Product implements Serializable {
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "product")
 	private Stock stock;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "ingrediente")
 	private List<ProductIngrediente> ingredientes;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<SaleProduct> saleProducts = new ArrayList<>();
 
 	public Product() {
 	}
@@ -223,6 +227,15 @@ public class Product implements Serializable {
 
 	public Product setIngredientes(List<ProductIngrediente> ingredientes) {
 		this.ingredientes = ingredientes;
+		return this;
+	}
+
+	public List<SaleProduct> getSaleProducts() {
+		return saleProducts;
+	}
+
+	public Product setSaleProducts(List<SaleProduct> saleProducts) {
+		this.saleProducts = saleProducts;
 		return this;
 	}
 }

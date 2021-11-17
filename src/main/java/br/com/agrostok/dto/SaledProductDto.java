@@ -1,6 +1,7 @@
 package br.com.agrostok.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class SaledProductDto implements Comparable<SaledProductDto>{
 
@@ -9,6 +10,7 @@ public class SaledProductDto implements Comparable<SaledProductDto>{
 	private BigDecimal receita;
 	private BigDecimal despesa;
 	private BigDecimal liquido;
+	private String monthAndYear;
 	private Long productId;
 
 	public SaledProductDto(BigDecimal total, String productName, BigDecimal custo, Long productId) {
@@ -83,5 +85,14 @@ public class SaledProductDto implements Comparable<SaledProductDto>{
 	@Override
 	public int compareTo(SaledProductDto e) {
 		return e.getReceita().compareTo(this.getReceita());
+	}
+
+	public String getMonthAndYear() {
+		return monthAndYear;
+	}
+
+	public SaledProductDto setMonthAndYear(String monthAndYear) {
+		this.monthAndYear = monthAndYear;
+		return this;
 	}
 }

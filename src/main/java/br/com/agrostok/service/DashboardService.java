@@ -4,12 +4,10 @@ import static java.time.Month.DECEMBER;
 import static java.time.Month.JANUARY;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -71,6 +69,10 @@ public class DashboardService {
 
     public List<SaledProductDto> listSalesByProduct() {
         return productService.findProductsWithTotalSaled().stream().limit(20).collect(Collectors.toList());
+    }
+
+    public List<SaledProductDto> listSalesByProductAndMonth(LocalDate startDate) {
+        return productService.findProductsWithTotalSaledGroupedByMonth(startDate);
     }
 
     public SaledProductDto listReceitaAndDespesa() {

@@ -1,8 +1,12 @@
 package br.com.agrostok.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
@@ -13,11 +17,8 @@ import javax.validation.ValidatorFactory;
 
 import br.com.agrostok.dto.IngredienteDto;
 import br.com.agrostok.entity.*;
-import br.com.agrostok.repository.ProductIngredientRepository;
-import br.com.agrostok.repository.SaleProductRepository;
-import br.com.agrostok.repository.SaleRepository;
+import br.com.agrostok.repository.*;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,9 +31,10 @@ import br.com.agrostok.dto.ValidationDto;
 import br.com.agrostok.dto.filter.PaginacaoDto;
 import br.com.agrostok.exception.AppRuntimeException;
 import br.com.agrostok.exception.ValidationException;
-import br.com.agrostok.repository.ProductRepository;
 import br.com.agrostok.util.AppUtil;
 import br.com.gestaoprocesso.enums.PaginacaoEnum;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class ProductService {
@@ -209,59 +211,78 @@ public class ProductService {
 
     public List<SaledProductDto> findProductsWithTotalSaled() {
         try {
+            LocalDateTime startDate = LocalDateTime.of(2000,1,1,0,0,0);
+
 //            List<SaleProduct> productDtos = productRepository.findProductAndSaleValue(userService.getLoggerUser().getId());
-            List<Sale> sales = saleRepository.findAll();
-            Map<Long, SaledProductDto> mapaVendaPorProduto = new HashMap<>();
-            for (Sale sale : sales) {
-                List<SaleProduct> saleProducts = saleProductRepository.findBySaleId(sale.getId());
-                saleProducts.stream().forEach(s -> {
-                    SaledProductDto dto = new SaledProductDto();
-                    boolean isSalgadinho = false;
-                    if (Objects.isNull(s.getCusto())) {
-                        List<ProductIngrediente> productIngredientes = this.productIngredientRepository.findByProductId(s.getProduct().getId());
+            List<SaledProductDto> returnList = new ArrayList<>();
+            List<Product> products = saleRepository.findProductsSalesByMonth(startDate,null);
+            products.stream().forEach(product -> {
+                List<ProductIngrediente> ingredientes = productIngredientRepository.findByProductId(product.getId());
+                List<Long> idsIngredientes = ingredientes.stream().map(i -> i.getIngrediente().getId()).collect(Collectors.toList());
 
-                        List<Ingrediente> ingredientes = productIngredientes.stream().map(ProductIngrediente::getIngrediente).collect(Collectors.toList());
-                        List<Stock> stocks = new ArrayList<>();
-                        ingredientes.stream().forEach(i -> {
-                            stocks.addAll(i.getStocks());
-                        });
-                        BigDecimal despesa = stocks.stream().map(Stock::getValue).reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal totalVendidoPorMes = BigDecimal.ZERO;
+                BigDecimal totalDespesaPorMes = BigDecimal.ZERO;
+                if (idsIngredientes.isEmpty()) {
+                    totalDespesaPorMes = saleRepository.findTotalDespesaCustoFixo(product.getId(), startDate,null );
+                } else {
+                    totalDespesaPorMes = saleRepository.findTotalDespesa(idsIngredientes, startDate,null);
+                }
+                totalVendidoPorMes = saleRepository.findTotalVendido(Arrays.asList(product.getId()), startDate,null);
+                SaledProductDto dto = new SaledProductDto();
+                dto.setTotal(Objects.isNull(totalVendidoPorMes) ? BigDecimal.ZERO : totalVendidoPorMes);
+                dto.setDespesa(Objects.isNull(totalDespesaPorMes) ? BigDecimal.ZERO : totalDespesaPorMes);
+                dto.setReceita(Objects.isNull(totalVendidoPorMes) ? BigDecimal.ZERO : totalVendidoPorMes);
+                dto.setLiquido(dto.getReceita().subtract(dto.getDespesa()));
+                dto.setProductName(product.getName());
+                returnList.add(dto);
+            });
 
-                        dto.setDespesa(despesa);
-                    } else {
-                        isSalgadinho = true;
-                        dto.setDespesa(s.getCusto());
-                    }
-                    dto
-                            .setProductName(s.getProduct().getName())
-                            .setTotal(s.getTotal())
-                            .setReceita(s.getTotal())
-                            .setLiquido(dto.getReceita().subtract(dto.getDespesa()));
-
-                    if (mapaVendaPorProduto.containsKey(s.getProduct().getId())) {
-                        SaledProductDto dtoExistent = mapaVendaPorProduto.get(s.getProduct().getId());
-                        dtoExistent.setTotal(dtoExistent.getTotal().add(dto.getTotal()));
-                        dtoExistent.setReceita(dtoExistent.getReceita().add(dto.getReceita()));
-                        dtoExistent.setLiquido(dtoExistent.getReceita().subtract(dtoExistent.getDespesa()));
-                        if(isSalgadinho){
-                            dtoExistent.setDespesa(dtoExistent.getDespesa().add(dto.getDespesa()));
-                        }
-
-                        dtoExistent.setProductName(dtoExistent.getProductName());
-                        mapaVendaPorProduto.put(s.getProduct().getId(), dtoExistent);
-                    } else {
-                        mapaVendaPorProduto.put(s.getProduct().getId(), dto);
-                    }
-
-                });
-            }
-            List listRetorno = new ArrayList<SaledProductDto>(mapaVendaPorProduto.values());
-            Collections.sort(listRetorno);
-            return listRetorno;
+            return returnList;
 
         } catch (Exception e) {
             throw new AppRuntimeException(AppUtil.generateRandomString());
         }
+    }
+
+    @Transactional
+    public List<SaledProductDto> findProductsWithTotalSaledGroupedByMonth(LocalDate startDateWithoutHours) {
+        try {
+            LocalDateTime startDate = LocalDateTime.of(startDateWithoutHours, LocalTime.MIN);
+            LocalDateTime endDate = startDate.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
+
+            List<SaledProductDto> returnList = new ArrayList<>();
+            List<Product> products = saleRepository.findProductsSalesByMonth(startDate,endDate);
+            products.stream().forEach(product -> {
+                List<ProductIngrediente> ingredientes = productIngredientRepository.findByProductId(product.getId());
+                List<Long> idsIngredientes = ingredientes.stream().map(i -> i.getIngrediente().getId()).collect(Collectors.toList());
+
+                BigDecimal totalVendidoPorMes = BigDecimal.ZERO;
+                BigDecimal totalDespesaPorMes = BigDecimal.ZERO;
+                if (idsIngredientes.isEmpty()) {
+                    totalDespesaPorMes = saleRepository.findTotalDespesaCustoFixo(product.getId(), startDate,endDate);
+                } else {
+                    totalDespesaPorMes = saleRepository.findTotalDespesa(idsIngredientes, startDate,endDate);
+                }
+                totalVendidoPorMes = saleRepository.findTotalVendido(Arrays.asList(product.getId()), startDate,endDate);
+                SaledProductDto dto = new SaledProductDto();
+                dto.setTotal(Objects.isNull(totalVendidoPorMes) ? BigDecimal.ZERO : totalVendidoPorMes);
+                dto.setDespesa(Objects.isNull(totalDespesaPorMes) ? BigDecimal.ZERO : totalDespesaPorMes);
+                dto.setReceita(Objects.isNull(totalVendidoPorMes) ? BigDecimal.ZERO : totalVendidoPorMes);
+                dto.setLiquido(dto.getReceita().subtract(dto.getDespesa()));
+                dto.setProductName(product.getName());
+                returnList.add(dto);
+            });
+
+            return returnList;
+
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new AppRuntimeException(AppUtil.generateRandomString());
+        }
+    }
+
+    private Predicate<SaledProductDto> findByProductId(SaledProductDto dto) {
+        return dtoIterate -> dtoIterate.getProductId() == dto.getProductId();
     }
 
 }

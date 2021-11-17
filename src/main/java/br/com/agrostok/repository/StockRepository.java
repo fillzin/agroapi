@@ -13,8 +13,8 @@ import br.com.agrostok.entity.Stock;
 
 public interface StockRepository extends JpaRepository<Stock, Long>, JpaSpecificationExecutor<Stock> {
 
-	@Query(value = "SELECT x FROM Stock x WHERE x.userCreatedId =:userId ORDER BY x.count ASC")
-	Page<Stock> findByFiltros(Long userId, Pageable pageable);
+	@Query(value = "SELECT x FROM Stock x JOIN x.ingrediente i  WHERE x.userCreatedId =:userId AND ((:name is null) or (i.name like %:name%)) ORDER BY x.count ASC")
+	Page<Stock> findByFiltros(Long userId, Pageable pageable, String name);
 
 	@Query(value = "SELECT x FROM Stock x WHERE x.userCreatedId =:userId AND x.product.id = :productId")
 	Optional<Stock> findByProductAndUser(Long userId, Long productId);

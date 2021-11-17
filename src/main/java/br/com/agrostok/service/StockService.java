@@ -19,9 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.agrostok.dto.ProductDto;
 import br.com.agrostok.dto.SaleDto;
 import br.com.agrostok.dto.StockDto;
+import br.com.agrostok.dto.StockHistDto;
 import br.com.agrostok.dto.filter.PaginacaoDto;
 import br.com.agrostok.entity.Product;
 import br.com.agrostok.entity.Stock;
+import br.com.agrostok.entity.StockHist;
 import br.com.agrostok.exception.AppBusinessException;
 import br.com.agrostok.exception.AppRuntimeException;
 import br.com.agrostok.repository.StockRepository;
@@ -65,12 +67,12 @@ public class StockService {
 
     }
 
-    public List<StockDto> listAll(PaginacaoDto paginacaoDto) {
+    public List<StockDto> listAll(PaginacaoDto paginacaoDto, String name) {
         try {
             PageRequest paginacao = PageRequest.of(PaginacaoEnum.getPage(paginacaoDto.getPagina()),
                     PaginacaoEnum.getTotalRegistros(paginacaoDto.getQtdRegistros()));
 
-            Page<Stock> pageClients = stockRepository.findByFiltros(userService.getLoggerUser().getId(), paginacao);
+            Page<Stock> pageClients = stockRepository.findByFiltros(userService.getLoggerUser().getId(), paginacao, name);
             if (!pageClients.getContent().isEmpty()) {
                 return pageClients.getContent().stream().map(stock -> {
                     StockDto dto = new StockDto();
@@ -157,5 +159,34 @@ public class StockService {
     public Optional<Stock> findByProductAndUser(Long id, Long productId) {
         return stockRepository.findByProductAndUser(userService.getLoggerUser().getId(), productId);
     }
+    
+	public List<StockDto> listAllEntradas(PaginacaoDto paginacaoDto, String name) {
+		try {
+			PageRequest paginacao = PageRequest.of(PaginacaoEnum.getPage(paginacaoDto.getPagina()),
+					PaginacaoEnum.getTotalRegistros(paginacaoDto.getQtdRegistros()));
+
+			Page<Stock> pageClients = stockRepository.findByFiltros(userService.getLoggerUser().getId(), paginacao, name);
+			if (!pageClients.getContent().isEmpty()) {
+				return pageClients.getContent().stream().map(stock -> {
+					StockDto dto = new StockDto();
+					if (Objects.nonNull(stock.getProduct())) {
+						dto.setProductName(stock.getProduct().getName());
+					} else {
+						dto.setProductName(stock.getIngrediente().getName());
+					}
+
+					dto.setCount(stock.getCount());
+					
+					
+					dto.setValue(stock.getValue());
+					return dto;
+				}).collect(Collectors.toList());
+			}
+		} catch (Exception e) {
+			throw new AppRuntimeException(AppUtil.generateRandomString());
+		}
+
+		return new ArrayList<StockDto>();
+	}
 
 }

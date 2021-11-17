@@ -1,9 +1,12 @@
 package br.com.agrostok.dto;
 
+import java.math.BigDecimal;
+
 public class StockDto {
 	private Long id;
 	private String productName;
 	private Integer count;
+	private BigDecimal value;
 
 	public Long getId() {
 		return id;
@@ -27,6 +30,14 @@ public class StockDto {
 
 	public void setCount(Integer count) {
 		this.count = count;
+	}
+
+	public BigDecimal getValue() {
+		return value;
+	}
+
+	public void setValue(BigDecimal value) {
+		this.value = value;
 	}
 
 }

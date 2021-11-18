@@ -67,31 +67,7 @@ public class StockService {
 
     }
 
-    public List<StockDto> listAll(PaginacaoDto paginacaoDto, String name) {
-        try {
-            PageRequest paginacao = PageRequest.of(PaginacaoEnum.getPage(paginacaoDto.getPagina()),
-                    PaginacaoEnum.getTotalRegistros(paginacaoDto.getQtdRegistros()));
 
-            Page<Stock> pageClients = stockRepository.findByFiltros(userService.getLoggerUser().getId(), paginacao, name);
-            if (!pageClients.getContent().isEmpty()) {
-                return pageClients.getContent().stream().map(stock -> {
-                    StockDto dto = new StockDto();
-                    if (Objects.nonNull(stock.getProduct())) {
-                        dto.setProductName(stock.getProduct().getName());
-                    } else {
-                        dto.setProductName(stock.getIngrediente().getName());
-                    }
-
-                    dto.setCount(stock.getCount());
-                    return dto;
-                }).collect(Collectors.toList());
-            }
-        } catch (Exception e) {
-            throw new AppRuntimeException(AppUtil.generateRandomString());
-        }
-
-        return new ArrayList<StockDto>();
-    }
 
     @Transactional
     public void input(SaleDto saleDto) {

@@ -36,12 +36,7 @@ public class StockController {
 	private SaleService saleService;
 
 
-	@GetMapping(value = "/list")
-	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<List<StockDto>> list(@RequestParam(required = false) Integer page,
-			@RequestParam(required = false) Integer count, @RequestParam(required = false) String name) {
-		return ResponseEntity.ok(stockService.listAll(new PaginacaoDto(page, count), name));
-	}
+
 	
 	@PostMapping(value = "/sale")
 	@ResponseStatus(value = HttpStatus.OK)
@@ -61,7 +56,7 @@ public class StockController {
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<List<StockDto>> listHistory(@RequestParam(required = false) Integer page,
 			@RequestParam(required = false) Integer count, @RequestParam(required = false) String name) {
-		return ResponseEntity.ok(stockService.listAll(new PaginacaoDto(page, count), name));
+		return ResponseEntity.ok(stockService.listAllEntradas(new PaginacaoDto(page, count), name));
 	}
 	@GetMapping(value = "/client")
 	@ResponseStatus(value = HttpStatus.OK)

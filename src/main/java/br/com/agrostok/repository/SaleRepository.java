@@ -12,8 +12,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
+import br.com.agrostok.dto.ReturnSaleDto;
 import br.com.agrostok.dto.SaleDto;
 import br.com.agrostok.entity.Sale;
+import br.com.agrostok.entity.SaleProduct;
 
 public interface SaleRepository extends JpaRepository<Sale, Long>, JpaSpecificationExecutor<Sale> {
 
@@ -43,6 +45,10 @@ public interface SaleRepository extends JpaRepository<Sale, Long>, JpaSpecificat
 
 	@Query("SELECT p from  Sale s join s.saleProducts sp  join sp.product p where s.createdDate >= :startDate and ((:endDate is null) or s.createdDate <= :endDate) group by p.id")
 	List<Product> findProductsSalesByMonth(LocalDateTime startDate, LocalDateTime endDate);
-
+	
+	
+	@Query("SELECT new br.com.agrostok.dto.ReturnSaleDto(s.product.id, p.name, s.total, count(s.product.id) as soma) FROM SaleProduct s LEFT JOIN s.product p  group by s.product.id having count(s.product.id) >=0 order by soma DESC")
+	List<ReturnSaleDto> findProductsByNameAndHighestValue();
+	
 
 }

@@ -7,11 +7,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -110,8 +113,9 @@ public class SaleService {
 
 			Page<Sale> pageSales = saleRepository.findByFiltros(userService.getLoggerUser().getId(), paginacao);
 			if (!pageSales.getContent().isEmpty()) {
-
+				
 				return pageSales.getContent().stream().map(sale -> {
+					
 					return convertSaleDto(sale);
 				}).collect(Collectors.toList());
 			}
@@ -134,6 +138,7 @@ public class SaleService {
 		saleDto.setCreatedDate(sale.getCreatedDate());
 
 		List<SaleProduct> products = saleProductRepository.findBySaleId(sale.getId());
+		
 		String nameProducts = products.stream().map(saleProduct -> saleProduct.getProduct().getName())
 				.collect(Collectors.joining(","));
 
@@ -161,12 +166,32 @@ public class SaleService {
 		return new ArrayList<SaleDto>();
 
 	}
+	
+	public List<ReturnSaleDto> orderedByHighestSell() {
+		try {
+			
+			
+			List<ReturnSaleDto> lista = saleRepository.findProductsByNameAndHighestValue();
+			
+			/* Tu fez certinho aqui */
+		
+			if(!lista.isEmpty()) {
+				
 
-	private SaleDto convertDto(Sale client) {
-		SaleDto saleDto = new SaleDto();
-		saleDto.setCondominio(client.getCondominio());
-		saleDto.setCasa(client.getCasa());
-		saleDto.setBloco(client.getBloco());
-		return saleDto;
+				 lista.get(0).setMsg("Esse >>>>> é o produto mais comprado");
+					
+				
+				return lista;
+			}
+
+			
+		} catch (Exception e) {
+			System.out.println(e);
+			throw new AppRuntimeException(AppUtil.generateRandomString());
+		}
+		return new ArrayList<ReturnSaleDto>();
+
 	}
+
+	
 }

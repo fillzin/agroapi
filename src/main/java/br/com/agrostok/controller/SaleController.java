@@ -31,5 +31,12 @@ public class SaleController {
 		return ResponseEntity.ok(saleService.listAll(new PaginacaoDto(page, count)));
 	}
 	
+	@GetMapping(value = "/list2")
+	@ResponseStatus(value = HttpStatus.OK)
+	public ResponseEntity<List<ReturnSaleDto>> listByProductName(@RequestParam(required = false) Integer page,
+			@RequestParam(required = false) Integer count) {
+		return ResponseEntity.ok(saleService.orderedByHighestSell());
+	}
+	
 
 }

@@ -45,4 +45,6 @@ public interface SaleRepository extends JpaRepository<Sale, Long>, JpaSpecificat
 	List<Product> findProductsSalesByMonth(LocalDateTime startDate, LocalDateTime endDate);
 
 
+	@Query("SELECT SUM(s.value) from Stock s  where s.ingrediente.id = :id and s.createdDate >= :startDate and ((:endDate is null) or s.createdDate <= :endDate)")
+	BigDecimal findTotalDespesaPorMultiplosProdutos(Long id, LocalDateTime startDate, LocalDateTime endDate);
 }

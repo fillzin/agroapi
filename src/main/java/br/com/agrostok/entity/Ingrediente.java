@@ -40,6 +40,9 @@ public class Ingrediente implements Serializable {
 	@OneToMany(mappedBy = "ingrediente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Stock> stocks = new ArrayList<>();
 
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "ingrediente")
+	private List<ProductIngrediente> products;
+
 
 	public Long getId() {
 		return id;
@@ -83,6 +86,15 @@ public class Ingrediente implements Serializable {
 
 	public Ingrediente setStocks(List<Stock> stocks) {
 		this.stocks = stocks;
+		return this;
+	}
+
+	public List<ProductIngrediente> getProducts() {
+		return products;
+	}
+
+	public Ingrediente setProducts(List<ProductIngrediente> products) {
+		this.products = products;
 		return this;
 	}
 }

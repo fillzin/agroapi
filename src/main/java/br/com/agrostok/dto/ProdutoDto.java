@@ -1,6 +1,7 @@
 package br.com.agrostok.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ProdutoDto {
@@ -17,6 +18,8 @@ public class ProdutoDto {
 	private boolean twoPrice;
 	private boolean temIngrediente;
 	private List<IngredienteDto> ingredientes;
+	private LocalDateTime date;
+	private BigDecimal valueToSum;
 
 	public Long getId() {
 		return id;
@@ -132,6 +135,24 @@ public class ProdutoDto {
 
 	public ProdutoDto setIngredientes(List<IngredienteDto> ingredientes) {
 		this.ingredientes = ingredientes;
+		return this;
+	}
+
+	public LocalDateTime getDate() {
+		return date;
+	}
+
+	public ProdutoDto setDate(LocalDateTime date) {
+		this.date = date;
+		return this;
+	}
+
+	public BigDecimal getValueToSum() {
+		return valueToSum;
+	}
+
+	public ProdutoDto setValueToSum(BigDecimal valueToSum) {
+		this.valueToSum = valueToSum;
 		return this;
 	}
 }

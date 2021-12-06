@@ -1,6 +1,7 @@
 package br.com.agrostok.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
+import br.com.agrostok.dto.IngredienteDto;
+import br.com.agrostok.dto.ReturnSaleDto;
 import br.com.agrostok.entity.Stock;
 
 public interface StockRepository extends JpaRepository<Stock, Long>, JpaSpecificationExecutor<Stock> {
@@ -21,4 +24,7 @@ public interface StockRepository extends JpaRepository<Stock, Long>, JpaSpecific
 
 	@Query(value = "SELECT sum(x.value) FROM Stock x")
 	BigDecimal somaDespesa();
+	
+	@Query("SELECT new br.com.agrostok.dto.IngredienteDto(count(i.id),  i.name, sum(s.value) as soma_ingredientes) FROM Stock s INNER JOIN s.ingrediente i  GROUP BY i.id ORDER BY soma_ingredientes DESC")
+	List<IngredienteDto> findIngredientsByHighestValue();
 }

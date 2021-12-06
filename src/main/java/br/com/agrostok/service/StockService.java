@@ -16,7 +16,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.agrostok.dto.IngredienteDto;
 import br.com.agrostok.dto.ProductDto;
+import br.com.agrostok.dto.ReturnSaleDto;
 import br.com.agrostok.dto.SaleDto;
 import br.com.agrostok.dto.StockDto;
 import br.com.agrostok.dto.filter.PaginacaoDto;
@@ -157,5 +159,27 @@ public class StockService {
     public Optional<Stock> findByProductAndUser(Long id, Long productId) {
         return stockRepository.findByProductAndUser(userService.getLoggerUser().getId(), productId);
     }
+    
+	public List<IngredienteDto> listIngredientsByHighestValue() {
+		try {
+			
+			
+			List<IngredienteDto> lista = stockRepository.findIngredientsByHighestValue();
+			
+		
+			if(!lista.isEmpty()) {
+				
+
+				return lista;
+			}
+
+			
+		} catch (Exception e) {
+			System.out.println(e);
+			throw new AppRuntimeException(AppUtil.generateRandomString());
+		}
+		return new ArrayList<IngredienteDto>();
+
+	}
 
 }

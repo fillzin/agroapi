@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.agrostok.dto.IngredienteDto;
 import br.com.agrostok.dto.RetornoDto;
+import br.com.agrostok.dto.ReturnSaleDto;
 import br.com.agrostok.dto.SaleDto;
 import br.com.agrostok.dto.StockDto;
 import br.com.agrostok.dto.StockHistDto;
@@ -68,6 +70,13 @@ public class StockController {
 	public ResponseEntity<List<SaleDto>> client(@RequestParam(required = false) Integer page,
 			@RequestParam(required = false) Integer count) {
 		return ResponseEntity.ok(saleService.orderByClient(new PaginacaoDto(page, count)));
+	}
+	
+	@GetMapping(value = "/ingredient")
+	@ResponseStatus(value = HttpStatus.OK)
+	public ResponseEntity<List<IngredienteDto>> listIngredientsByHighestValue(@RequestParam(required = false) Integer page,
+			@RequestParam(required = false) Integer count) {
+		return ResponseEntity.ok(stockService.listIngredientsByHighestValue());
 	}
 
 //	@GetMapping(value = "/{id}")

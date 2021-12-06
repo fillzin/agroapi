@@ -3,6 +3,18 @@ package br.com.agrostok.dto;
 import java.math.BigDecimal;
 
 public class IngredienteDto {
+	public IngredienteDto(Long id, String name, BigDecimal value) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.value = value;
+	}
+
+	public IngredienteDto() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	private Long id;
 	private String name;
 	private BigDecimal value;

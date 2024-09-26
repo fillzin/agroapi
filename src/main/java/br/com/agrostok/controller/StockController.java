@@ -36,12 +36,7 @@ public class StockController {
 	private SaleService saleService;
 
 
-	@GetMapping(value = "/list")
-	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<List<StockDto>> list(@RequestParam(required = false) Integer page,
-			@RequestParam(required = false) Integer count) {
-		return ResponseEntity.ok(stockService.listAll(new PaginacaoDto(page, count)));
-	}
+
 	
 	@PostMapping(value = "/sale")
 	@ResponseStatus(value = HttpStatus.OK)
@@ -57,11 +52,11 @@ public class StockController {
 		return ResponseEntity.ok(new RetornoDto("OK"));
 	}
 	
-	@GetMapping(value = "/hist")
+	@GetMapping(value = "/entradas")
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<List<StockHistDto>> listHistory(@RequestParam(required = false) Integer page,
-			@RequestParam(required = false) Integer count) {
-		return ResponseEntity.ok(stockHistService.listAll(new PaginacaoDto(page, count)));
+	public ResponseEntity<List<StockDto>> listHistory(@RequestParam(required = false) Integer page,
+			@RequestParam(required = false) Integer count, @RequestParam(required = false) String name) {
+		return ResponseEntity.ok(stockService.listAllEntradas(new PaginacaoDto(page, count), name));
 	}
 	@GetMapping(value = "/client")
 	@ResponseStatus(value = HttpStatus.OK)
